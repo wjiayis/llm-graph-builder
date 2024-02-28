@@ -1,7 +1,7 @@
 # llm_graph_transformer
 
 ## Purpose
-The 'llm_graph_transformer' package enables the generation of knowledge graphs in a Neo4j workspace using OpenAI's GPT.
+The 'llm_graph_transformer' package enables the generation of knowledge graphs in a Neo4j workspace using Large language models.
 
 ## Installation
 Using Poetry is a more streamlined way to manage Python dependencies and projects. To manage python dependencies in 'pyproject.toml' file install Poetry using the following command:
@@ -12,6 +12,9 @@ Install Dependencies specified in the 'pyproject.toml' file using the command:
 
 poetry install
 
+or
+
+pip install -r requirements.txt
 
 ## Setting up Environment Variables
 Create .env file and update the following env variables.\
@@ -22,24 +25,12 @@ NEO4J_PASSWORD = ""\
 LLM_MODEL=""
 
 ## Importing Modules
-To import modules and functions from 'llm_graph_transformer.openaillm', you can use the following import statement:
+To import modules and functions from 'llm_graph_transformer', you can use the following import statement:
 
-from llm_graph_transformer.openaillm import *
+from llm_graph_transformer.llm_graph_transformer.llm import *
 
-## Functions/Modules
+## Checkout the examples/example.ipynb for usage
 
-# extract_graph_from_file(uri, userName, password, file_path, model):
-   Extracts a Neo4jGraph from a PDF file based on the model.
-   
-    Args:
-   	 uri: URI of the graph to extract
-   	 userName: Username to use for graph creation ( if None will use username from config file )
-   	 password: Password to use for graph creation ( if None will use password from config file )
-   	 file: File object containing the PDF file path to be used
-   	 model: Type of model to use ('OpenAI GPT 3.5' or 'OpenAI GPT 4')
-   
-     Returns: 
-   	 Json response to API with fileName, nodeCount, relationshipCount, processingTime, 
-     status and model as attributes.
+
 
 
