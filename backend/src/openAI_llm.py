@@ -1,4 +1,4 @@
-from src.llm_graph_transformer.OpenAI_graph_transformer import *
+from src.llm_graph_transformer.llm_graph_transformer.llm import *
 from tqdm import tqdm
 from src.make_relationships import create_source_chunk_entity_relationship
 import logging,os

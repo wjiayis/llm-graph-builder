@@ -1,7 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.graphs import Neo4jGraph
 from langchain.docstore.document import Document
-from dotenv import load_dotenv
 from datetime import datetime
 import logging
 import traceback
@@ -15,6 +14,7 @@ import boto3
 from urllib.parse import urlparse
 import os
 from tempfile import NamedTemporaryFile
+from dotenv import load_dotenv
 load_dotenv()
 logging.basicConfig(format='%(asctime)s - %(message)s',level='INFO')
 # from langchain.document_loaders import S3FileLoader
