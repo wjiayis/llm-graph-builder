@@ -51,6 +51,7 @@ def create_source_chunk_entity_relationship(source_file_name :str,
     graph.query('MATCH(s:Source {'+source_node.format(source_file_name)+'}) ,(c:Chunk {'+chunk_node_id_set.format(chunk_uuid)+'}) CREATE (s)-[:HAS_CHILD]->(c)')
     # dict = {}
     # nodes_list = []
+    print(graph_document)
     for node in graph_document[0].nodes:
         node_id = node.id
         result = graph.query('MATCH(c:Chunk {'+chunk_node_id_set.format(chunk_uuid)+'}), (n:'+ node.type +'{ id: "'+node_id+'"}) CREATE (c)-[:HAS_ENTITY]->(n)')
