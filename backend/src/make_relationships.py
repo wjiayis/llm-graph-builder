@@ -103,8 +103,9 @@ def merge_relationship_between_chunk_and_entites(graph: Neo4jGraph, graph_docume
 
 def merge_chunk_embedding(graph, graph_documents_chunk_chunk_Id, file_name):
     #create embedding
+    embedding_model = os.getenv('EMBEDDING_MODEL')
     isEmbedding = os.getenv('IS_EMBEDDING')
-    embeddings_model = OpenAIEmbeddings()
+    embeddings_model = OpenAIEmbeddings(model=embedding_model)
     
     for row in graph_documents_chunk_chunk_Id:
         # for graph_document in row['graph_doc']:
@@ -121,3 +122,10 @@ def merge_chunk_embedding(graph, graph_documents_chunk_chunk_Id, file_name):
                             "embeddings" : embeddings
                         }
                         )
+            #create vector index on chunk embedding
+            graph.query("""CREATE VECTOR INDEX `vector` if not exists for (c:Chunk) on (c.embedding)
+                            OPTIONS {indexConfig: {
+                            `vector.dimensions`: 768,
+                            `vector.similarity_function`: 'cosine'
+                            }}
+                        """)
