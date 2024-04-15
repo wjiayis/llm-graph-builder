@@ -153,7 +153,7 @@ const DropZone: FunctionComponent = () => {
             setalertDetails({
               showAlert: true,
               alertType: 'info',
-              alertMessage: `Chunk ${chunkNumber + 1}/${totalChunks} uploaded successfully`,
+              alertMessage: `Chunk ${chunkNumber}/${totalChunks} uploaded successfully`,
             });
             uploadNextChunk();
           }
@@ -190,6 +190,11 @@ const DropZone: FunctionComponent = () => {
         );
         setIsClicked(false);
         setIsLoading(false);
+        setalertDetails({
+          showAlert: true,
+          alertType: 'success',
+          alertMessage: `${file.name} uploaded successfully`,
+        });
       }
     };
 
