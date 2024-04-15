@@ -147,9 +147,7 @@ const DropZone: FunctionComponent = () => {
                 return curfile;
               })
             );
-            // @ts-ignore
-            chunkNumber = +1;
-            // @ts-ignore
+            chunkNumber++;
             start = end;
             end = start + chunkSize;
             setalertDetails({
