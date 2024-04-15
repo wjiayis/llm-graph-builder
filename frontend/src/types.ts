@@ -1,5 +1,7 @@
+import { AlertColor, AlertPropsColorOverrides } from '@mui/material';
 import { AxiosResponse } from 'axios';
 import { Dispatch, ReactNode, SetStateAction } from 'react';
+import { OverridableStringUnion } from '@mui/types';
 
 export interface CustomFile extends Partial<globalThis.File> {
   processing: number | string;
@@ -14,6 +16,7 @@ export interface CustomFile extends Partial<globalThis.File> {
   gcsBucket?: string;
   gcsBucketFolder?: string;
   errorMessage?: string;
+  uploadprogess?: number;
 }
 
 export interface OptionType {
@@ -47,7 +50,11 @@ export type UploadParams = {
 } & { [key: string]: any };
 
 export type FormDataParams = ExtractParams | UploadParams;
-
+export type alertState = {
+  showAlert: boolean;
+  alertType: OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined;
+  alertMessage: string;
+};
 export interface DropdownProps {
   onSelect: (option: OptionType | null | void) => void;
   isDisabled: boolean;
@@ -57,6 +64,7 @@ export interface CustomAlertProps {
   open: boolean;
   handleClose: () => void;
   alertMessage: string;
+  severity?: OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined;
 }
 
 export interface DataComponentProps {

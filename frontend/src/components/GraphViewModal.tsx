@@ -175,7 +175,7 @@ const GraphViewModal: React.FunctionComponent<GraphViewModalProps> = ({
           } else {
             setLoading(false);
             setStatus('danger');
-            setStatusMessage('Unable to retrieve document graph for ' + inspectedName);
+            setStatusMessage(`Unable to retrieve document graph for ${inspectedName}`);
           }
         })
         .catch((error: any) => {

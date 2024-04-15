@@ -39,3 +39,4 @@ export const colors = [
   '#a2836e',
   '#674d3c',
 ];
+export const chunkSize = 5 * 1024 * 1024;
