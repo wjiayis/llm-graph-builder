@@ -434,7 +434,7 @@ def merge_chunks(file_name, total_chunks):
       os.mkdir(merged_file_path)
 
   with open(os.path.join(merged_file_path, file_name), "wb") as write_stream:
-      for i in range(total_chunks):
+      for i in range(1,total_chunks+1):
           chunk_file_path = os.path.join(chunk_dir, f"{file_name}_part_{i}")
           with open(chunk_file_path, "rb") as chunk_file:
               shutil.copyfileobj(chunk_file, write_stream)
@@ -464,7 +464,7 @@ def upload_file(uri, userName, password, database, chunk, chunk_number:int, tota
           chunk_file.write(chunk.file.read())
       print(f"Chunk {chunk_number}/{total_chunks} saved")
 
-      if int(chunk_number) == int(total_chunks) - 1:
+      if int(chunk_number) == int(total_chunks):
           # If this is the last chunk, merge all chunks into a single file
           merge_chunks(originalname, int(total_chunks))
           print("File merged successfully")

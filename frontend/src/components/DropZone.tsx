@@ -98,9 +98,9 @@ const DropZone: FunctionComponent = () => {
     }
   }, [selectedFiles]);
   const uploadFileInChunks = (file: File) => {
-    const totalChunks = Math.ceil(file.size / chunkSize)-1;
+    const totalChunks = Math.ceil(file.size / chunkSize);
     const chunkProgressIncrement = 100 / totalChunks;
-    let chunkNumber = 0;
+    let chunkNumber = 1;
     let start = 0;
     let end = chunkSize;
     const uploadNextChunk = async () => {
@@ -108,8 +108,9 @@ const DropZone: FunctionComponent = () => {
         end,
         'filesize': file.size
       })
-      if (end <= file.size) {
+      if (chunkNumber <= totalChunks) {
         const chunk = file.slice(start, end);
+        console.log({ chunkNumber })
         console.log("chunk size", chunk.size)
         const formData = new FormData();
         formData.append('file', chunk);
@@ -162,7 +163,7 @@ const DropZone: FunctionComponent = () => {
             if (start + chunkSize < file.size) {
               end = start + chunkSize
             } else {
-              end = file.size+1;
+              end = file.size + 1;
             }
             setalertDetails({
               showAlert: true,
