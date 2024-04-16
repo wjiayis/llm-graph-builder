@@ -24,7 +24,7 @@ import sys
 from langchain.globals import set_debug
 set_debug(True)
 warnings.filterwarnings("ignore")
-
+import shutil 
 load_dotenv()
 logging.basicConfig(format='%(asctime)s - %(message)s',level='INFO')
 
@@ -424,3 +424,52 @@ def connection_check(uri,userName,password,db_name):
   graph = Neo4jGraph(url=uri, database=db_name, username=userName, password=password)
   graph_DB_dataAccess = graphDBdataAccess(graph)
   return graph_DB_dataAccess.connection_check()
+
+def merge_chunks(file_name, total_chunks):
+  
+  chunk_dir = os.path.join(os.path.dirname(__file__), "chunks")
+  merged_file_path = os.path.join(os.path.dirname(__file__), "merged_files")
+
+  if not os.path.exists(merged_file_path):
+      os.mkdir(merged_file_path)
+
+  with open(os.path.join(merged_file_path, file_name), "wb") as write_stream:
+      for i in range(total_chunks):
+          chunk_file_path = os.path.join(chunk_dir, f"{file_name}_part_{i}")
+          with open(chunk_file_path, "rb") as chunk_file:
+              shutil.copyfileobj(chunk_file, write_stream)
+              # pdf_bytes = b''.join(chunk_file)
+          os.unlink(chunk_file_path)  # Delete the individual chunk file after merging
+      # pdf_buffer = BytesIO(pdf_bytes)
+      # file_name_split = file_name.split('.')
+      # new_file_name = file_name_split[0]+'_new.'+file_name_split[1]
+      # c = canvas.Canvas(os.path.join(merged_file_path, file_name), pagesize=letter)
+      # # Write the bytes to the canvas
+      # c.drawImage(pdf_buffer, 100, 100)
+      # # Save the canvas as a PDF file
+      # c.save()
+
+  print("Chunks merged successfully")
+
+def upload_file(uri, userName, password, database, chunk, chunk_number:int, total_chunks:int, originalname):
+  chunk_dir = os.path.join(os.path.dirname(__file__), "chunks")  # Directory to save chunks
+  print(f'Chunk Director: {chunk_dir}')
+  if not os.path.exists(chunk_dir):
+      os.mkdir(chunk_dir)
+  chunk_file_name = originalname.split('.')[0]
+  chunk_file_path = os.path.join(chunk_dir, f"{originalname}_part_{chunk_number}")
+  print(f'Chunk File Path: {chunk_file_path}')
+  try:
+      with open(chunk_file_path, "wb") as chunk_file:
+          chunk_file.write(chunk.file.read())
+      print(f"Chunk {chunk_number}/{total_chunks} saved")
+
+      if int(chunk_number) == int(total_chunks) - 1:
+          # If this is the last chunk, merge all chunks into a single file
+          # merge_chunks(originalname, int(total_chunks))
+          print("File merged successfully")
+
+      return "Chunk uploaded successfully"
+  except Exception as e:
+      print("Error saving chunk:", e)
+      raise Exception("Error saving chunk")

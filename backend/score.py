@@ -212,7 +212,21 @@ async def connect(uri=Form(None),
         logging.exception(f'Exception:{error_message}')
         return create_api_response(job_status,message=message,error=error_message)
 
-
+@app.post("/upload")
+async def upload_large_file_into_chunks(file:UploadFile = File(...), chunkNumber=Form(None), totalChunks=Form(None), 
+                                        originalname=Form(None), model=Form(None), uri=Form(None), userName=Form(None), 
+                                        password=Form(None), database=Form(None)):
+    try:
+        result = await asyncio.to_thread(upload_file,uri,userName,password,database,file,chunkNumber,totalChunks,originalname)
+        return create_api_response('Success',message=result)
+    except Exception as e:
+        job_status = "Failed"
+        message="Unable to upload large file into chunks"
+        error_message = str(e)
+        logging.info(message)
+        logging.exception(f'Exception:{error_message}')
+        return create_api_response(job_status,message=message,error=error_message)
+        
 def decode_password(pwd):
     sample_string_bytes = base64.b64decode(pwd)
     decoded_password = sample_string_bytes.decode("utf-8")

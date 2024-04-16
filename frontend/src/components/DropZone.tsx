@@ -102,7 +102,7 @@ const DropZone: FunctionComponent = () => {
     const chunkProgressIncrement = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
-    let end = 0;
+    let end = chunkSize;
     const uploadNextChunk = async () => {
       if (end <= file.size) {
         const chunk = file.slice(start, end);
@@ -129,8 +129,13 @@ const DropZone: FunctionComponent = () => {
         );
         try {
           const apiResponse = await axios.post(
-            'https://friendly-space-system-579g9679qpj3vx9j-8000.app.github.dev/upload',
-            formData
+            'https://upgraded-sniffle-x55j55qgrprhvv9r-8000.app.github.dev/upload',
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
           );
           console.log(apiResponse.data);
           if (apiResponse?.data.status === 'Failed') {
@@ -214,7 +219,7 @@ const DropZone: FunctionComponent = () => {
         isTesting={true}
         className='bg-none'
         dropZoneOptions={{
-          accept: { 'application/pdf': ['.pdf'] },
+          // accept: { 'application/pdf': ['.pdf'] },
           onDrop: (f: Partial<globalThis.File>[]) => {
             onDropHandler(f);
           },
