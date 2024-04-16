@@ -5,7 +5,7 @@ import Loader from '../utils/Loader';
 import { v4 as uuidv4 } from 'uuid';
 import { useCredentials } from '../context/UserCredentials';
 import { useFileContext } from '../context/UsersFiles';
-import { getFileFromLocal, saveFileToLocal } from '../utils/Utils';
+import { getFileFromLocal, saveFileToLocal, url } from '../utils/Utils';
 import CustomAlert from './Alert';
 import { CustomFile, alertState } from '../types';
 import { chunkSize } from '../utils/Constants';
@@ -98,14 +98,19 @@ const DropZone: FunctionComponent = () => {
     }
   }, [selectedFiles]);
   const uploadFileInChunks = (file: File) => {
-    const totalChunks = Math.ceil(file.size / chunkSize);
+    const totalChunks = Math.ceil(file.size / chunkSize)-1;
     const chunkProgressIncrement = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
     let end = chunkSize;
     const uploadNextChunk = async () => {
+      console.log({
+        end,
+        'filesize': file.size
+      })
       if (end <= file.size) {
         const chunk = file.slice(start, end);
+        console.log("chunk size", chunk.size)
         const formData = new FormData();
         formData.append('file', chunk);
         formData.append('chunkNumber', chunkNumber.toString());
@@ -129,7 +134,7 @@ const DropZone: FunctionComponent = () => {
         );
         try {
           const apiResponse = await axios.post(
-            'https://upgraded-sniffle-x55j55qgrprhvv9r-8000.app.github.dev/upload',
+            `${url()}/upload`,
             formData,
             {
               headers: {
@@ -154,7 +159,11 @@ const DropZone: FunctionComponent = () => {
             );
             chunkNumber++;
             start = end;
-            end = start + chunkSize;
+            if (start + chunkSize < file.size) {
+              end = start + chunkSize
+            } else {
+              end = file.size+1;
+            }
             setalertDetails({
               showAlert: true,
               alertType: 'info',

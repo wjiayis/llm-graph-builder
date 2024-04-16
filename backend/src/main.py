@@ -466,7 +466,7 @@ def upload_file(uri, userName, password, database, chunk, chunk_number:int, tota
 
       if int(chunk_number) == int(total_chunks) - 1:
           # If this is the last chunk, merge all chunks into a single file
-          # merge_chunks(originalname, int(total_chunks))
+          merge_chunks(originalname, int(total_chunks))
           print("File merged successfully")
 
       return "Chunk uploaded successfully"
