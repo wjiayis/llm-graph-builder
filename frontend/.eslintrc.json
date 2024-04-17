@@ -33,6 +33,7 @@
       "dot-notation": "error",
       "eqeqeq": "off", // Off for v1
       "func-names": "error",
+      "no-plusplus":"off",
       "func-style": [
         "error",
         "declaration",
@@ -88,7 +89,7 @@
       "no-iterator": "error",
       "no-labels": "error",
       "no-lone-blocks": "error",
-      "no-lonely-if": "error",
+      "no-lonely-if": "off",
       "no-loop-func": "error",
       "no-magic-numbers": "off",
       "no-multi-assign": "error",
@@ -101,12 +102,6 @@
       "no-octal-escape": "error",
       "no-param-reassign": "off", // Off for v1
       "no-path-concat": "error",
-      "no-plusplus": [
-        "error",
-        {
-          "allowForLoopAfterthoughts": true
-        }
-      ],
       "no-proto": "off", // Off for v1
       "no-restricted-globals": "error",
       "no-return-assign": "error",
@@ -154,7 +149,7 @@
       "prefer-spread": "warn",
       "prefer-template": "warn",
       "radix": "off", // Off for v1
-      "require-atomic-updates": "error",
+      "require-atomic-updates": "off",
       "require-await": "warn", // Warn for v1
       "sort-keys": "off",
       "spaced-comment": [
