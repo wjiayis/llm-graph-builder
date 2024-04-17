@@ -217,7 +217,7 @@ async def upload_large_file_into_chunks(file:UploadFile = File(...), chunkNumber
                                         originalname=Form(None), model=Form(None), uri=Form(None), userName=Form(None), 
                                         password=Form(None), database=Form(None)):
     try:
-        result = await asyncio.to_thread(upload_file,uri,userName,password,database,file,chunkNumber,totalChunks,originalname)
+        result = await asyncio.to_thread(upload_file,uri,userName,password,database,file,chunkNumber,totalChunks,originalname,model)
         return create_api_response('Success',message=result)
     except Exception as e:
         job_status = "Failed"

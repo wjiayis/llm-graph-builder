@@ -11,3 +11,10 @@ def get_documents_from_file(file):
     loader = PyPDFLoader('temp.pdf')
     pages = loader.load_and_split()
     return file_name,file_key,pages
+
+def get_documents_from_file_by_path(file_path,fileName):
+    file_name = fileName
+    file_key = fileName
+    loader = PyPDFLoader(file_path)
+    pages = loader.load_and_split()
+    return file_name,file_key,pages

@@ -6,7 +6,7 @@ import logging
 from src.create_chunks import CreateChunksofDocument
 from src.graphDB_dataAccess import graphDBdataAccess
 from src.api_response import create_api_response
-from src.document_sources.local_file import get_documents_from_file
+from src.document_sources.local_file import *
 from src.entities.source_node import sourceNode
 from src.generate_graphDocuments_from_llm import generate_graphDocuments
 from src.document_sources.gcs_bucket import *
@@ -21,8 +21,6 @@ from langchain_community.document_loaders import WikipediaLoader
 import warnings
 from pytube import YouTube
 import sys
-from langchain.globals import set_debug
-set_debug(True)
 warnings.filterwarnings("ignore")
 import shutil 
 load_dotenv()
@@ -223,7 +221,7 @@ def create_source_node_graph_url(uri, userName, password ,model, source_url=None
         return create_api_response(job_status,message=message,error=error_message,file_source=source_type, file_name=file_name)  
 
 
-def extract_graph_from_file(uri, userName, password, model, db_name=None, file=None,source_url=None,aws_access_key_id=None,aws_secret_access_key=None,wiki_query=None,max_sources=None, gcs_bucket_name=None, gcs_bucket_folder=None, gcs_blob_filename=None):
+def extract_graph_from_file(uri, userName, password, model,fileName, db_name=None, file=None,source_url=None,aws_access_key_id=None,aws_secret_access_key=None,wiki_query=None,max_sources=None, gcs_bucket_name=None, gcs_bucket_folder=None, gcs_blob_filename=None):
   """
    Extracts a Neo4jGraph from a PDF file based on the model.
    
@@ -247,9 +245,12 @@ def extract_graph_from_file(uri, userName, password, model, db_name=None, file=N
     if  source_url is not None:
       source_type, youtube_url = check_url_source(source_url)
       
-    if file!=None:
-      file_name, file_key, pages = get_documents_from_file(file)
-      
+    
+    if fileName is not None or fileName != '':
+      logging.info(f'Process large file name :{fileName}')
+      merged_file_path = os.path.join(os.path.join(os.path.dirname(__file__), "merged_files"),fileName)
+      print(f'Large File path:{merged_file_path}')
+      file_name, file_key, pages = get_documents_from_file_by_path(merged_file_path,fileName)
     elif wiki_query:  
         file_name, file_key, pages = get_documents_from_Wikipedia(wiki_query)
     
@@ -438,20 +439,12 @@ def merge_chunks(file_name, total_chunks):
           chunk_file_path = os.path.join(chunk_dir, f"{file_name}_part_{i}")
           with open(chunk_file_path, "rb") as chunk_file:
               shutil.copyfileobj(chunk_file, write_stream)
-              # pdf_bytes = b''.join(chunk_file)
-          os.unlink(chunk_file_path)  # Delete the individual chunk file after merging
-      # pdf_buffer = BytesIO(pdf_bytes)
-      # file_name_split = file_name.split('.')
-      # new_file_name = file_name_split[0]+'_new.'+file_name_split[1]
-      # c = canvas.Canvas(os.path.join(merged_file_path, file_name), pagesize=letter)
-      # # Write the bytes to the canvas
-      # c.drawImage(pdf_buffer, 100, 100)
-      # # Save the canvas as a PDF file
-      # c.save()
+          # Delete the individual chunk file after merging    
+          os.unlink(chunk_file_path)  
+  file_size = os.path.getsize(os.path.join(merged_file_path, file_name))
+  return file_size
 
-  print("Chunks merged successfully")
-
-def upload_file(uri, userName, password, database, chunk, chunk_number:int, total_chunks:int, originalname):
+def upload_file(uri, userName, password, database, chunk, chunk_number:int, total_chunks:int, originalname,model):
   chunk_dir = os.path.join(os.path.dirname(__file__), "chunks")  # Directory to save chunks
   print(f'Chunk Director: {chunk_dir}')
   if not os.path.exists(chunk_dir):
@@ -466,9 +459,18 @@ def upload_file(uri, userName, password, database, chunk, chunk_number:int, tota
 
       if int(chunk_number) == int(total_chunks):
           # If this is the last chunk, merge all chunks into a single file
-          merge_chunks(originalname, int(total_chunks))
-          print("File merged successfully")
-
+          file_size = merge_chunks(originalname, int(total_chunks))
+          # print("File merged successfully")
+          obj_source_node = sourceNode()
+          obj_source_node.file_name = originalname
+          obj_source_node.file_type = 'pdf'
+          obj_source_node.file_size = file_size
+          obj_source_node.file_source = 'local file'
+          obj_source_node.model = model
+          obj_source_node.created_at = datetime.now()
+          graph = Neo4jGraph(url=uri, database=database, username=userName, password=password)
+          graphDb_data_Access = graphDBdataAccess(graph)
+          graphDb_data_Access.create_source_node(obj_source_node)
       return "Chunk uploaded successfully"
   except Exception as e:
       print("Error saving chunk:", e)
