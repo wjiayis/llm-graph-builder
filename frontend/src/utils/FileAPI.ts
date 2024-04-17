@@ -45,7 +45,6 @@ export const extractAPI = async (
     } else {
       additionalParams = { model, file, source_type };
     }
-
   }
   const response = await apiCall(urlExtract, method, commonParams, additionalParams);
   return response;

@@ -104,14 +104,8 @@ const DropZone: FunctionComponent = () => {
     let start = 0;
     let end = chunkSize;
     const uploadNextChunk = async () => {
-      console.log({
-        end,
-        'filesize': file.size
-      })
       if (chunkNumber <= totalChunks) {
         const chunk = file.slice(start, end);
-        console.log({ chunkNumber })
-        console.log("chunk size", chunk.size)
         const formData = new FormData();
         formData.append('file', chunk);
         formData.append('chunkNumber', chunkNumber.toString());
@@ -134,15 +128,11 @@ const DropZone: FunctionComponent = () => {
           })
         );
         try {
-          const apiResponse = await axios.post(
-            `${url()}/upload`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            }
-          );
+          const apiResponse = await axios.post(`${url()}/upload`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
           console.log(apiResponse.data);
           if (apiResponse?.data.status === 'Failed') {
             throw new Error(`message:${apiResponse.data.message},fileName:${apiResponse.data.file_name}`);
@@ -161,7 +151,7 @@ const DropZone: FunctionComponent = () => {
             chunkNumber++;
             start = end;
             if (start + chunkSize < file.size) {
-              end = start + chunkSize
+              end = start + chunkSize;
             } else {
               end = file.size + 1;
             }
@@ -173,7 +163,7 @@ const DropZone: FunctionComponent = () => {
             uploadNextChunk();
           }
         } catch (error) {
-          setIsLoading(false)
+          setIsLoading(false);
           setalertDetails({
             showAlert: true,
             alertType: 'error',
@@ -198,7 +188,7 @@ const DropZone: FunctionComponent = () => {
             if (curfile.name == file.name) {
               return {
                 ...curfile,
-                status:"New",
+                status: 'New',
                 uploadprogess: 100,
               };
             }
