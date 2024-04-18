@@ -109,7 +109,7 @@ async def create_source_knowledge_graph_url(
         return create_api_response("Success",message=message,success_count=success_count,failed_count=failed_count,file_name=lst_file_name)    
     except Exception as e:
         job_status = "Failed"
-        message = f"Unable to create source node for source type: {source_type} and source: {source_url}{wiki_query}"
+        message = f"Unable to create source node for source type: {source_type} and source: {source}"
         error_message = str(e)
         logging.exception(f'Exception Stack trace:')
         return create_api_response(job_status,message=message,error=error_message,file_source=source_type)
