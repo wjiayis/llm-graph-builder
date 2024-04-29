@@ -99,6 +99,33 @@ const GraphViewModal: React.FunctionComponent<GraphViewModalProps> = ({
     };
   }, []);
 
+  const result = [{
+    'element_id': '4:a69712a5-1102-40da-a96d-70c1143ea8e5:7105',
+    'labels': ['Document'],
+    'properties': {
+      'fileName': 'India',
+      'errorMessage': '',
+      'fileSource': 'Wikipedia',
+      'processingTime': 69.51,
+      'url': 'https://en.wikipedia.org/wiki/India',
+      'createdAt': '2024-04-26T09:10:53.003733000',
+      'fileSize': 8074,
+      'nodeCount': 68,
+      'model': 'OpenAI GPT 3.5',
+      'fileType': 'text',
+      'relationshipCount': 69,
+      'status': 'Completed',
+      'updatedAt': '2024-04-26T09:12:02.515685000'
+    }
+  }];
+
+  const relResult = [{
+    'element_id': '5:a69712a5-1102-40da-a96d-70c1143ea8e5:6917622486129443290',
+    'type': 'NATIONALITY',
+    'start_node_element_id': '4:a69712a5-1102-40da-a96d-70c1143ea8e5:8207',
+    'end_node_element_id': '4:a69712a5-1102-40da-a96d-70c1143ea8e5:474'
+  }];
+
   useEffect(() => {
     if (open) {
       setNodes([]);
@@ -108,20 +135,22 @@ const GraphViewModal: React.FunctionComponent<GraphViewModalProps> = ({
         graphType.length === 3
           ? queryMap.DocChunkEntities
           : graphType.includes('Entities') && graphType.includes('Chunks')
-          ? queryMap.ChunksEntities
-          : graphType.includes('Entities') && graphType.includes('Document')
-          ? queryMap.DocEntities
-          : graphType.includes('Document') && graphType.includes('Chunks')
-          ? queryMap.DocChunks
-          : graphType.includes('Entities') && graphType.length === 1
-          ? queryMap.Entities
-          : graphType.includes('Chunks') && graphType.length === 1
-          ? queryMap.Chunks
-          : queryMap.Document;
+            ? queryMap.ChunksEntities
+            : graphType.includes('Entities') && graphType.includes('Document')
+              ? queryMap.DocEntities
+              : graphType.includes('Document') && graphType.includes('Chunks')
+                ? queryMap.DocChunks
+                : graphType.includes('Entities') && graphType.length === 1
+                  ? queryMap.Entities
+                  : graphType.includes('Chunks') && graphType.length === 1
+                    ? queryMap.Chunks
+                    : queryMap.Document;
       if (viewPoint === 'showGraphView') {
         queryToRun = constructQuery(newCheck, documentNo);
+        console.log('outside', queryToRun);
       } else {
         queryToRun = constructDocQuery(newCheck);
+        console.log('inside', queryToRun);
       }
       const session = driver?.session();
       setLoading(true);
@@ -129,56 +158,45 @@ const GraphViewModal: React.FunctionComponent<GraphViewModalProps> = ({
         ?.run(queryToRun, { document_name: inspectedName })
         .then((results) => {
           if (results.records && results.records.length > 0) {
-            // @ts-ignore
-            const neo4jNodes = results.records.map((f) => f._fields[0]);
-            // @ts-ignore
-            const neo4jRels = results.records.map((f) => f._fields[1]);
-
+            const neoNodes = result.map((f) => f);
+            const neoRels = relResult.map((f) => f);
             // Infer color schema dynamically
             let iterator = 0;
-            const schemeVal: Scheme = {};
+            const schemeVal: Scheme = {};[]
             let labels: string[] = [];
-            neo4jNodes.forEach((node) => {
-              labels = node.map((f: any) => f.labels);
-              labels.forEach((label: any) => {
-                if (schemeVal[label] == undefined) {
-                  schemeVal[label] = calcWordColor(label[0]);
-                  iterator += 1;
-                }
-              });
+            labels = neoNodes.map((f: any) => f.labels);
+            labels.forEach((label: any) => {
+              if (schemeVal[label] == undefined) {
+                schemeVal[label] = calcWordColor(label[0]);
+                iterator += 1;
+              }
             });
 
-            const newNodes = neo4jNodes.map((n) => {
-              const totalNodes = n.map((g: any) => {
-                return {
-                  id: g.elementId,
-                  size: getSize(g),
-                  captionAlign: 'bottom',
-                  iconAlign: 'bottom',
-                  captionHtml: <b>Test</b>,
-                  caption: getNodeCaption(g),
-                  color: schemeVal[g.labels[0]],
-                  icon: getIcon(g),
-                  labels: g.labels,
-                };
-              });
-              return totalNodes;
+            const newNodes: any = neoNodes.map((g) => {
+              return {
+                id: g.element_id,
+                size: getSize(g),
+                captionAlign: 'bottom',
+                iconAlign: 'bottom',
+                captionHtml: <b>Test</b>,
+                caption: getNodeCaption(g),
+                color: schemeVal[g.labels[0]],
+                icon: getIcon(g),
+                labels: g.labels,
+              };
             });
-            const finalNodes = newNodes.flat();
-            const newRels: any = neo4jRels.map((r: any) => {
-              const totalRels = r.map((relations: any) => {
-                return {
-                  id: relations.elementId,
-                  from: relations.startNodeElementId,
-                  to: relations.endNodeElementId,
-                  caption: relations.type,
-                };
-              });
-              return totalRels;
+            console.log('new', newNodes);
+            const newRels: any = neoRels.map((r: any) => {
+              return {
+                id: r.elementId,
+                from: r.startNodeElementId,
+                to: r.endNodeElementId,
+                caption: r.type,
+              };
             });
-            const finalRels = newRels.flat();
-            setNodes(finalNodes);
-            setRelationships(finalRels);
+            console.log('rel', newRels)
+            // setNodes(newNodes);
+            // setRelationships(newRels);
             setScheme(schemeVal);
             setLoading(false);
           } else {
