@@ -21,7 +21,7 @@ const Content: React.FC<ContentProps> = ({ isExpanded, showChatBot, openChatBot 
   const [inspectedName, setInspectedName] = useState<string>('');
   const [connectionStatus, setConnectionStatus] = useState<boolean>(false);
   const { setUserCredentials, userCredentials, driver, setDriver } = useCredentials();
-  const { filesData, setFilesData, setModel, model } = useFileContext();
+  const { filesData, setFilesData, setModel, model, selectedNodes, selectedRels } = useFileContext();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [viewPoint, setViewPoint] = useState<'tableView' | 'showGraphView'>('tableView');
@@ -76,6 +76,7 @@ const Content: React.FC<ContentProps> = ({ isExpanded, showChatBot, openChatBot 
 
   const extractData = async (uid: number) => {
     if (filesData[uid]?.status == 'New') {
+      const filesize = filesData[uid].size;
       try {
         setFilesData((prevfiles) =>
           prevfiles.map((curfile, idx) => {
@@ -131,13 +132,15 @@ const Content: React.FC<ContentProps> = ({ isExpanded, showChatBot, openChatBot 
           localStorage.getItem('secretkey'),
           filesData[uid].name ?? '',
           filesData[uid].gcsBucket ?? '',
-          filesData[uid].gcsBucketFolder ?? ''
+          filesData[uid].gcsBucketFolder ?? '',
+          selectedNodes.map((l) => l.value),
+          selectedRels.map((t) => t.value)
         );
+
         if (apiResponse?.status === 'Failed') {
-          throw new Error(
-            `error:${apiResponse.message},message:${apiResponse.message},fileName:${apiResponse.file_name}`
-          );
-        } else {
+          let errorobj = { error: apiResponse.error, message: apiResponse.message, fileName: apiResponse.file_name };
+          throw new Error(JSON.stringify(errorobj));
+        } else if (filesize != undefined && filesize < 10000000) {
           setFilesData((prevfiles) => {
             return prevfiles.map((curfile) => {
               if (curfile.name == apiResponse?.data?.fileName) {
@@ -156,26 +159,12 @@ const Content: React.FC<ContentProps> = ({ isExpanded, showChatBot, openChatBot 
           });
         }
       } catch (err: any) {
-        const errorMessage = err.message;
-        const messageMatch = errorMessage.match(/message:(.*),fileName:(.*),error:(.*)/);
-        if (err?.name === 'AxiosError') {
-          setShowAlert(true);
-          setErrorMessage(err.message);
-          setFilesData((prevfiles) =>
-            prevfiles.map((curfile, idx) => {
-              if (idx == uid) {
-                return {
-                  ...curfile,
-                  status: 'Failed',
-                };
-              }
-              return curfile;
-            })
-          );
-        } else {
-          const message = messageMatch[1].trim();
-          const fileName = messageMatch[2].trim();
-          const errorMessage = messageMatch[3].trim();
+        const error = JSON.parse(err.message);
+        if (Object.keys(error).includes('fileName')) {
+          const message = error.message;
+          const fileName = error.fileName;
+          const errorMessage = error.message;
+          console.log({ message, fileName, errorMessage });
           setShowAlert(true);
           setErrorMessage(message);
           setFilesData((prevfiles) =>
