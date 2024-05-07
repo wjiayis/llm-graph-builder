@@ -151,7 +151,7 @@ def get_chat_history(llm, history):
         #     session_id=session_id
         # )        
         chat_history = history.messages
-        
+        print(chat_history)
         if not chat_history:
             return ""
 
@@ -188,17 +188,25 @@ def extract_and_remove_source(message):
         }
     return response
 
-def clear_chat_history(graph,session_id):
-    history = Neo4jChatMessageHistory(
-        graph=graph,
-        session_id=session_id
+def clear_chat_history(graph, session_id):
+
+    try:
+        logging.info(f"Clearing chat history for session ID: {session_id}")
+        history = Neo4jChatMessageHistory(
+            graph=graph,
+            session_id=session_id
         )
-    history.clear()
-    return {
-            "session_id": session_id, 
-            "message": "The chat History is cleared", 
+        history.clear()
+        logging.info("Chat history cleared successfully")
+
+        return {
+            "session_id": session_id,
+            "message": "The chat history is cleared",
             "user": "chatbot"
-            }
+        }
+    except Exception as e:
+        logging.exception(f"Error occurred while clearing chat history for session ID {session_id}: {e}")
+
   
 def QA_RAG(graph,model,question,session_id):
     logging.info(f"QA_RAG called at {datetime.now()}")
