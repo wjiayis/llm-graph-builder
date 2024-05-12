@@ -1,3 +1,15 @@
+/* Use SSG Color Scheme */
+
+.n-bg-palette-primary-bg-strong {
+  background-color: rgb(50, 0, 113) !important;
+}
+
+.n-bg-palette-primary-bg-strong:hover {
+  background-color: rgb(202, 51, 58) !important;
+}
+
+
+
 .filetable {
   /* width: calc(-360px + 100dvw); */
   height: calc(-322px + 100dvh);
