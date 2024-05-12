@@ -45,7 +45,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-add_routes(app,ChatVertexAI(), path="/vertexai")
+# add_routes(app,ChatVertexAI(), path="/vertexai")
 
 app.add_api_route("/health", health([healthy_condition, healthy]))
 
