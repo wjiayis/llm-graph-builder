@@ -21,9 +21,9 @@ import json
 from typing import List
 from google.cloud import logging as gclogger
 
-logging_client = gclogger.Client()
-logger_name = "llm_experiments_metrics" # Saved in the google cloud logs
-logger = logging_client.logger(logger_name)
+# logging_client = gclogger.Client()
+# logger_name = "llm_experiments_metrics" # Saved in the google cloud logs
+# logger = logging_client.logger(logger_name)
 
 def healthy_condition():
     output = {"healthy": True}
