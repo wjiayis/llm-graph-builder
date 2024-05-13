@@ -1,5 +1,6 @@
-import Neo4jLogoBW from '../../logo.svg';
-import Neo4jLogoColor from '../../logo-color.svg';
+import SSGLogoColor from '../../ssg-logo-color.jpeg';
+// import Neo4jLogoBW from '../../logo.svg';
+// import Neo4jLogoColor from '../../logo-color.svg';
 import {
   MoonIconOutline,
   SunIconOutline,
@@ -38,12 +39,23 @@ export default function Header({
       >
         <section className='flex w-1/3 shrink-0 grow-0 items-center grow min-w-[200px]'>
           <Typography variant='h6' component='a' href='#app-bar-with-responsive-menu' sx={{}}>
-            <img
-              src={themeMode === 'dark' ? Neo4jLogoBW : Neo4jLogoColor}
-              className='h-8 min-h-8 min-w-8'
-              alt='Neo4j Logo'
-            />
+            <div style={{ display: 'inline-block'}}>
+              <img
+                src={SSGLogoColor}
+                className='h-8 min-h-8 min-w-8'
+                alt='SSG Logo'
+              />
+            </div>
+            {/* <div style={{ display: 'inline-block', marginLeft: '16px' }}>
+              <img
+                src={themeMode === 'dark' ? Neo4jLogoBW : Neo4jLogoColor}
+                className='h-8 min-h-8 min-w-8'
+                alt='Neo4j Logo'
+              />
+            </div> */}
           </Typography>
+
+
         </section>
         <section className='items-center justify-end w-1/3 grow-0 flex'>
           <div>
