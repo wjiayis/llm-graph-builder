@@ -156,7 +156,7 @@ async def extract_knowledge_graph_from_file(
         
         
         logging.info(json.dumps(result))
-        logger.log_struct(result)
+        # logger.log_struct(result)
         return create_api_response('Success', data=result, file_source= source_type)
     except Exception as e:
         message=f" Failed To Process File:{file_name} or LLM Unable To Parse Content"
@@ -164,7 +164,7 @@ async def extract_knowledge_graph_from_file(
         graphDb_data_Access.update_exception_db(file_name,error_message)
         josn_obj = {'message':message,'error_message':error_message, 'file_name': file_name,'status':'Failed','url':uri,'failed_count':1, 'source_type': source_type}
         logging.error(json.dumps(josn_obj))
-        logger.log_struct(josn_obj)
+        # logger.log_struct(josn_obj)
         logging.exception(f'File Failed in extraction: {josn_obj}')
         return create_api_response('Failed', message=message + error_message[:100], error=error_message, file_name = file_name)
 
@@ -252,7 +252,7 @@ async def connect(uri=Form(None), userName=Form(None), password=Form(None), data
         result = await asyncio.to_thread(connection_check, graph)
         logging.info(json.dumps({'uri':uri,'status':result}))
         josn_obj = {'uri':uri,'status':result, 'count':1}
-        logger.log_struct(josn_obj)
+        # logger.log_struct(josn_obj)
         return create_api_response('Success',message=result)
     except Exception as e:
         job_status = "Failed"
